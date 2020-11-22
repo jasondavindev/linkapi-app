@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { response } from 'express';
 import { Model } from 'mongoose';
 import { PinoLogger } from 'nestjs-pino';
 import { DealDto } from './dto/deal.dto';
