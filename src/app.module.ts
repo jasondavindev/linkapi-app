@@ -16,7 +16,6 @@ import { PipedriveModule } from './pipedrive/pipedrive.module';
     TerminusModule,
     PipedriveModule,
     ScheduleModule.forRoot(),
-    PipedriveModule,
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],

@@ -4,9 +4,9 @@ import { Interval } from '@nestjs/schedule';
 import { Model } from 'mongoose';
 import { PinoLogger } from 'nestjs-pino';
 import { Deal } from './schemas/deal.schema';
-import { pipeDriveClient } from './integration/client/pipedrive.client';
 import { DealResponseDto } from './dto/deal.response.dto';
 import { DealDto } from './dto/deal.dto';
+import { PipedriveClientService } from './client/pipedrive.client.service';
 
 const { PIPEDRIVE_JOB_DELAY } = process.env;
 
@@ -15,17 +15,19 @@ export class PipedriveService {
   constructor(
     @InjectModel(Deal.name) private readonly dealModel: Model<Deal>,
     private readonly logger: PinoLogger,
+    private readonly integrationClient: PipedriveClientService,
   ) {}
 
   @Interval(parseInt(PIPEDRIVE_JOB_DELAY, 10))
-  async findDealsAndCreate() {
+  async findDealsAndCreate(): Promise<Deal[]> {
     const deals = await this.getWonDeals();
-    await this.createDeals(deals);
+    const createdDeals = await this.createDeals(deals);
+    return createdDeals;
   }
 
   private async getWonDeals() {
     this.logger.info('PipeDriveService - calling pipedrive API to get deals');
-    const response = await pipeDriveClient.getWonDeals();
+    const response = await this.integrationClient.getWonDealsData();
     return this.convertDealsDto(response);
   }
 
