@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { response } from 'express';
 import { Model } from 'mongoose';
 import { PinoLogger } from 'nestjs-pino';
 import { DealDto } from './dto/deal.dto';
 import { DealResponseDto } from './dto/deal.response.dto';
+import { ProductDto } from './dto/product.dto';
+import { RawProductDto } from './dto/raw.product.dto';
 import { Deal } from './schemas/deal.schema';
 
 @Injectable()
@@ -21,6 +22,7 @@ export class DealService {
       title: deal.title,
       value: deal.value,
       wonTime: new Date(deal.won_time),
+      personName: deal.person_name,
     }));
   }
 
@@ -47,5 +49,18 @@ export class DealService {
     );
 
     return this.dealModel.insertMany(filteredDeals);
+  }
+
+  convertProductsToProductDto(productsDto: RawProductDto[]): ProductDto[] {
+    return productsDto.map<ProductDto>((product) => ({
+      id: product.product_id,
+      name: product.name,
+      price: product.item_price,
+      quantity: product.quantity,
+    }));
+  }
+
+  async getNotSentDeals() {
+    return this.dealModel.find();
   }
 }

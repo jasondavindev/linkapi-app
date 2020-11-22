@@ -4,6 +4,7 @@ import { PinoLogger } from 'nestjs-pino';
 import { Deal } from '../deal/schemas/deal.schema';
 import { PipedriveClientService } from './client/pipedrive.client.service';
 import { DealService } from '../deal/deal.service';
+import { DealDto } from 'src/deal/dto/deal.dto';
 
 const { PIPEDRIVE_JOB_DELAY } = process.env;
 
@@ -25,6 +26,25 @@ export class PipedriveService {
   private async getWonDeals() {
     this.logger.info('PipeDriveService - calling pipedrive API to get deals');
     const response = await this.integrationClient.getWonDealsData();
-    return this.dealService.convertDealsDto(response);
+    const deals = this.dealService.convertDealsDto(response);
+    const populatedDealProducts = await this.populateDealsProducts(deals);
+    return populatedDealProducts;
+  }
+
+  private async populateDealsProducts(deals: DealDto[]) {
+    const dealsPromise = deals.map<Promise<DealDto>>(async (deal) =>
+      this.populateDealProducts(deal),
+    );
+    return Promise.all(dealsPromise);
+  }
+
+  private async populateDealProducts(deal: DealDto) {
+    const { data } = await this.integrationClient.getProductsData(deal);
+
+    if (data === null) return deal;
+
+    const products = this.dealService.convertProductsToProductDto(data);
+
+    return { ...deal, products };
   }
 }

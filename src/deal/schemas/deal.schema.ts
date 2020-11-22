@@ -1,4 +1,5 @@
 import { Document, Schema } from 'mongoose';
+import { ProductSchema } from './product.schema';
 
 export class Deal extends Document {
   title: string;
@@ -7,6 +8,7 @@ export class Deal extends Document {
   wonTime: Date;
   createdAt?: Date;
   pipeDriveId: number;
+  personName: string;
 }
 
 export const DealSchema = new Schema<Deal>(
@@ -16,6 +18,11 @@ export const DealSchema = new Schema<Deal>(
     value: Number,
     wonTime: Date,
     pipeDriveId: Number,
+    personName: String,
+    products: {
+      type: [ProductSchema],
+      default: [],
+    },
   },
   {
     timestamps: true,

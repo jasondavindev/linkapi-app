@@ -8,6 +8,7 @@ export const wonDeal: DealDto = {
   title: 'Product',
   value: 100,
   wonTime: new Date('2020-11-21 00:00:00'),
+  personName: 'Juca',
 };
 
 export const rawWonDeal: RawDealDto = {
@@ -16,6 +17,7 @@ export const rawWonDeal: RawDealDto = {
   value: 100,
   won_time: '2020-11-21 00:00:00',
   id: 1,
+  person_name: 'Juca',
 };
 
 export const dealResponse: DealResponseDto = {

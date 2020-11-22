@@ -4,4 +4,5 @@ export interface RawDealDto {
   status: string;
   value: number;
   won_time: string;
+  person_name: string;
 }
