@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { description, version } from '../../package.json';
+import { name, description, version } from '../../package.json';
 
 export default (app: INestApplication): void => {
   const documentBuilder = new DocumentBuilder()

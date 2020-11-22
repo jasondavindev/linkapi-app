@@ -1,3 +1,7 @@
+import { config as dotenvConfig } from 'dotenv';
+
+dotenvConfig({ path: '.env' });
+
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import * as helmet from 'helmet';
@@ -10,7 +14,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.use(helmet());
-  app.use(new ValidationPipe({ transform: true }));
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   swaggerConfigure(app);
 
