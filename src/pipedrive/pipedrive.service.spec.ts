@@ -6,7 +6,8 @@ import loggerConfig from '../common/logger.config';
 import { PipedriveClientModule } from './client/pipedrive.client.module';
 import { PipedriveClientService } from './client/pipedrive.client.service';
 import { PipedriveService } from './pipedrive.service';
-import { Deal } from './schemas/deal.schema';
+import { Deal } from '../deal/schemas/deal.schema';
+import { DealModule } from '../deal/deal.module';
 
 describe('PipedriveService', () => {
   let pipedriveService: PipedriveService;
@@ -20,15 +21,16 @@ describe('PipedriveService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        PipedriveService,
-        {
-          provide: getModelToken(Deal.name),
-          useValue: mockDealModel,
-        },
+      providers: [PipedriveService],
+      imports: [
+        PipedriveClientModule,
+        LoggerModule.forRoot(loggerConfig),
+        DealModule,
       ],
-      imports: [PipedriveClientModule, LoggerModule.forRoot(loggerConfig)],
-    }).compile();
+    })
+      .overrideProvider(getModelToken(Deal.name))
+      .useValue(mockDealModel)
+      .compile();
 
     pipedriveService = module.get<PipedriveService>(PipedriveService);
     pipedriveClientService = module.get<PipedriveClientService>(
@@ -48,7 +50,7 @@ describe('PipedriveService', () => {
     expect(createdDeals.length).toBe(1);
   });
 
-  it('should create and return an empty list when the deal already exists', async () => {
+  it('should return an empty list when the deal already exists', async () => {
     jest
       .spyOn(pipedriveClientService, 'getWonDealsData')
       .mockResolvedValueOnce(dealResponse);

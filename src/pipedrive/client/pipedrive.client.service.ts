@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import axios, { AxiosInstance } from 'axios';
-import { DealResponseDto } from '../dto/deal.response.dto';
+import { DealResponseDto } from '../../deal/dto/deal.response.dto';
 
 const { PIPEDRIVE_API_URL, PIPEDRIVE_API_TOKEN } = process.env;
 

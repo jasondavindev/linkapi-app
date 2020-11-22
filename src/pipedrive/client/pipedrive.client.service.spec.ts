@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { dealResponse } from '../../__mocks__/deals';
 import { PipedriveClientService } from './pipedrive.client.service';
-import { DealResponseDto } from '../dto/deal.response.dto';
+import { DealResponseDto } from '../../deal/dto/deal.response.dto';
 
 jest.mock('axios');
 

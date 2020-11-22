@@ -1,6 +1,6 @@
-import { DealResponseDto } from 'src/pipedrive/dto/deal.response.dto';
-import { DealDto } from '../pipedrive/dto/deal.dto';
-import { RawDealDto } from '../pipedrive/dto/raw.deal.dto';
+import { DealResponseDto } from '../deal/dto/deal.response.dto';
+import { DealDto } from '../deal/dto/deal.dto';
+import { RawDealDto } from '../deal/dto/raw.deal.dto';
 
 export const wonDeal: DealDto = {
   pipeDriveId: 1,
