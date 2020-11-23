@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { PinoLogger } from 'nestjs-pino';
+import { DealAggregatedByCreatedAtDto } from './dto/deal.aggregation.dto';
 import { DealDto } from './dto/deal.dto';
 import { Deal } from './schemas/deal.schema';
 
@@ -48,5 +49,51 @@ export class DealService {
         return deal.save();
       }),
     );
+  }
+
+  async getDealsGroupByCreatedAt() {
+    return this.dealModel.aggregate<DealAggregatedByCreatedAtDto>([
+      { $match: { sentToPipedrive: true } },
+      {
+        $project: {
+          createdAt: {
+            $dateToString: { format: '%Y-%m-%d', date: '$createdAt' },
+          },
+          pipeDriveId: 1,
+          title: 1,
+          value: 1,
+          wonTime: 1,
+          personName: 1,
+          products: 1,
+        },
+      },
+      {
+        $bucketAuto: {
+          groupBy: '$createdAt',
+          buckets: 100,
+          output: {
+            count: { $sum: 1 },
+            sales: { $push: '$$CURRENT' },
+            dates: { $push: '$createdAt' },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          date: { $toDate: { $arrayElemAt: ['$dates', 0] } },
+          count: 1,
+          sales: 1,
+        },
+      },
+      {
+        $project: {
+          'sales._id': 0,
+          'sales.pipeDriveId': 0,
+          'sales.products._id': 0,
+          'sales.createdAt': 0,
+        },
+      },
+    ]);
   }
 }
