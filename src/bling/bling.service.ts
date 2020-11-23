@@ -32,7 +32,10 @@ export class BlingService {
     const orders = convertDealsToOrders(notSentDeals);
     const ordersXML = convertOrdersToXML(orders);
     await this.sendOrdersToBlingApi(ordersXML);
-    await this.dealService.updateDealsSentStatus(notSentDeals);
+    const result = await this.dealService.updateDealsSentStatus(notSentDeals);
+
+    this.logger.info('BlingService - Finish job. Updating deals');
+    return result;
   }
 
   async sendOrdersToBlingApi(orders: string[]) {
@@ -41,9 +44,10 @@ export class BlingService {
     const createdOrders = this.createOrders(orders);
 
     try {
-      await Promise.all(createdOrders);
+      return Promise.all(createdOrders);
     } catch (error) {
       this.logger.error('BlingService - error creating order error=', error);
+      throw error;
     }
   }
 
