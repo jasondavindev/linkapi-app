@@ -3,8 +3,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TerminusModule } from '@nestjs/terminus';
 import { LoggerModule } from 'nestjs-pino';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import loggerConfig from './common/logger.config';
 import { HealthController } from './health/health.controller';
 import { PipedriveModule } from './pipedrive/pipedrive.module';
@@ -12,6 +10,7 @@ import { BlingModule } from './bling/bling.module';
 import { DealService } from './deal/deal.service';
 import { DealModule } from './deal/deal.module';
 import { Deal, DealSchema } from './deal/schemas/deal.schema';
+import { SalesModule } from './sales/sales.module';
 
 @Module({
   imports: [
@@ -23,8 +22,9 @@ import { Deal, DealSchema } from './deal/schemas/deal.schema';
     PipedriveModule,
     BlingModule,
     MongooseModule.forFeature([{ name: Deal.name, schema: DealSchema }]),
+    SalesModule,
   ],
-  controllers: [AppController, HealthController],
-  providers: [AppService, DealService],
+  controllers: [HealthController],
+  providers: [DealService],
 })
 export class AppModule {}

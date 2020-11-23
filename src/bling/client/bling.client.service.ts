@@ -1,5 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 import { Injectable } from '@nestjs/common';
+import { OrderResponseDto } from '../dto/order.response.dto';
 
 const { BLING_API_URL, BLING_USER_API_KEY } = process.env;
 
@@ -17,7 +18,7 @@ export class BlingClientService {
   }
 
   async createOrder(orderXML: string) {
-    return this.client.post(
+    return this.client.post<OrderResponseDto>(
       `/Api/v2/pedido/json?xml=${encodeURI(orderXML)}`,
       null,
       {

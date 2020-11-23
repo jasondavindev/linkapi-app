@@ -1,75 +1,62 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
+# LinkAPI App
 
-[travis-image]: https://api.travis-ci.org/nestjs/nest.svg?branch=master
-[travis-url]: https://travis-ci.org/nestjs/nest
-[linux-image]: https://img.shields.io/travis/nestjs/nest/master.svg?label=linux
-[linux-url]: https://travis-ci.org/nestjs/nest
-  
-  <p align="center">A progressive <a href="http://nodejs.org" target="blank">Node.js</a> framework for building efficient and scalable server-side applications, heavily inspired by <a href="https://angular.io" target="blank">Angular</a>.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/dm/@nestjs/core.svg" alt="NPM Downloads" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://api.travis-ci.org/nestjs/nest.svg?branch=master" alt="Travis" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://img.shields.io/travis/nestjs/nest/master.svg?label=linux" alt="Linux" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#5" alt="Coverage" /></a>
-<a href="https://gitter.im/nestjs/nestjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge"><img src="https://badges.gitter.im/nestjs/nestjs.svg" alt="Gitter" /></a>
-<a href="https://opencollective.com/nest#backer"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec"><img src="https://img.shields.io/badge/Donate-PayPal-dc3d53.svg"/></a>
-  <a href="https://twitter.com/nestframework"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Solução
 
-## Description
+A solução consiste em uma aplicação API Rest, utilizando Node.js + TypeScript + Nest.js, MongoDB e Redis.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+A aplicação consiste em dois Jobs. Um para chamar a API do Pipedrive, trazendo todas as deals com status ganho e com seus respectivos produtos. E o outro job é para inserir todos esses ganhos na plataforma Bling.
 
-## Installation
+Há um endpoint (`/v1/sales`) para listar todas as vendas agrupadas pela data de criação com o status `ganho`. Neste endpoint, foi utilizado Redis para cachear a resposta, otimizando o tempo da query de agregação do MongoDB.
+
+## Rodando a aplicação
+
+Esta solução inclui o uso do Docker. Para fins de uso local, foi adicionado um arquivo `docker-compose` para a criação dos containers do banco, redis e aplicação. Também há um Dockerfile para buildar a imagem da aplicação.
+
+Primeiramente, instale todos os pacotes necessário, executando
 
 ```bash
-$ npm install
+yarn install
 ```
 
-## Running the app
+Faça uma cópia do arquivo `.env.example` para `.env` e popule as variáveis de ambiente.
+
+Construa a aplicação, rodando
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+yarn build
 ```
 
-## Test
+Construa a imagem docker da aplicação, rodando
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+make dkbuild
 ```
 
-## Support
+Suba os containers, rodando
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+make dkup
+```
+A aplicação estará rodando na porta `3000` por padrão, ou se preferir, altere no arquivo `.env`.
 
-## Stay in touch
+**Obs**: foi criado um script shell para criar um usuário no MongoDB somente para a aplicação.
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Rodando os testes
 
-## License
+```bash
+make test
+```
 
-  Nest is [MIT licensed](LICENSE).
+### Rodando cobertura de testes
+
+```bash
+make test/cov
+```
+
+## Rotas
+
+No projeto, foi adicionado [Swagger](https://swagger.io/) para fins de documentação. Basta acessar a rota `/api-docs` da aplicação. Ex: http://localhost:3000/api-docs.
+
+## Integração continua
+
+Os arquivos de workflow se encontram na pasta `.github/workflows`. Foi criado alguns jobs para rodar os testes unitários.
