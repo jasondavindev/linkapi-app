@@ -68,4 +68,19 @@ describe('PipedriveService', () => {
 
     expect(createdDeals.length).toBe(0);
   });
+
+  it('should return the deal itself if products not found', async () => {
+    jest
+      .spyOn(pipedriveClientService, 'getWonDealsData')
+      .mockResolvedValueOnce(dealResponse);
+    jest
+      .spyOn(pipedriveClientService, 'getProductsData')
+      .mockResolvedValueOnce({ data: null, success: false });
+    jest.spyOn(mockDealModel, 'findOne').mockReturnValueOnce(null);
+    jest.spyOn(mockDealModel, 'insertMany').mockReturnValueOnce([wonDeal]);
+
+    const createdDeals = await pipedriveService.dealsCreatorJob();
+    expect(createdDeals.length).toBe(1);
+    expect(createdDeals[0].products).toEqual([]);
+  });
 });

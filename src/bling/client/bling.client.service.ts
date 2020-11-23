@@ -18,7 +18,7 @@ export class BlingClientService {
 
   async createOrder(orderXML: string) {
     return this.client.post(
-      '/Api/v2/pedido/json?xml=' + encodeURI(orderXML),
+      `/Api/v2/pedido/json?xml=${encodeURI(orderXML)}`,
       null,
       {
         headers: {

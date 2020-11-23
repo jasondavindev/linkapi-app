@@ -8,4 +8,5 @@ export interface DealDto {
   wonTime: Date;
   personName: string;
   products?: ProductDto[];
+  sentToPipedrive?: boolean;
 }

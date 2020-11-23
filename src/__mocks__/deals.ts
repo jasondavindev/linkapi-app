@@ -9,6 +9,8 @@ export const wonDeal: DealDto = {
   value: 100,
   wonTime: new Date('2020-11-21 00:00:00'),
   personName: 'Juca',
+  sentToPipedrive: false,
+  products: [],
 };
 
 export const rawWonDeal: RawDealDto = {

@@ -13,6 +13,7 @@ describe('DealService', () => {
     /** */
   }
   mockDealModel.findOne = jest.fn();
+  mockDealModel.find = jest.fn();
   mockDealModel.insertMany = jest.fn();
 
   beforeEach(async () => {
@@ -43,5 +44,20 @@ describe('DealService', () => {
     await service.createBulkDeals([wonDeal]);
 
     expect(mockDealModel.insertMany).toBeCalledWith([wonDeal]);
+  });
+
+  it('should return deals not sent status', () => {
+    jest.spyOn(mockDealModel, 'find').mockReturnValueOnce([wonDeal]);
+    expect(service.getNotSentDeals()).resolves.toEqual([wonDeal]);
+  });
+
+  it('should update the sent status to true', async () => {
+    const deal: Deal = {
+      save: jest.fn().mockImplementationOnce(async () => deal),
+    } as any;
+
+    const result = await service.updateDealsSentStatus([deal]);
+
+    expect(result[0].sentToPipedrive).toBeTruthy();
   });
 });

@@ -1,4 +1,5 @@
 import { Document, Schema } from 'mongoose';
+import { ProductDto } from '../dto/product.dto';
 import { ProductSchema } from './product.schema';
 
 export class Deal extends Document {
@@ -10,6 +11,7 @@ export class Deal extends Document {
   pipeDriveId: number;
   personName: string;
   sentToPipedrive: boolean;
+  products?: ProductDto[];
 }
 
 export const DealSchema = new Schema<Deal>(

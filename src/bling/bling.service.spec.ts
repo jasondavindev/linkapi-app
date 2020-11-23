@@ -6,9 +6,12 @@ import loggerConfig from '../common/logger.config';
 import { DealModule } from '../deal/deal.module';
 import { BlingService } from './bling.service';
 import { BlingClientModule } from './client/bling.client.module';
+import { BlingClientService } from './client/bling.client.service';
+import { AxiosInstance, AxiosResponse } from 'axios';
 
 describe('BlingService', () => {
   let service: BlingService;
+  let blingClientService: BlingClientService;
 
   function mockDealModel() {
     /** */
@@ -30,9 +33,26 @@ describe('BlingService', () => {
       .compile();
 
     service = module.get<BlingService>(BlingService);
+    blingClientService = module.get<BlingClientService>(BlingClientService);
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  it('should call the bling api to create order', () => {
+    const result = {
+      data: { retorno: { success: true } },
+    } as any;
+
+    jest.spyOn(blingClientService, 'createOrder').mockResolvedValueOnce(result);
+    expect(service.createOrder('<pedido>')).resolves.toEqual(result);
+  });
+
+  it('should call the bling api to create order list', async () => {
+    const result = {
+      data: { retorno: { success: true } },
+    } as any;
+
+    jest.spyOn(blingClientService, 'createOrder').mockResolvedValueOnce(result);
+    expect(await Promise.all(service.createOrders(['<pedido>']))).toEqual([
+      result,
+    ]);
   });
 });
