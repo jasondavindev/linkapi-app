@@ -1,8 +1,5 @@
-import axios from 'axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BlingClientService } from './bling.client.service';
-
-jest.mock('axios');
 
 describe('BlingClientService', () => {
   let service: BlingClientService;
@@ -20,7 +17,9 @@ describe('BlingClientService', () => {
   it('should call Bling api to create order', () => {
     const result = { retorno: { success: true } };
 
-    jest.spyOn(axios, 'post').mockResolvedValueOnce(result);
+    Object.defineProperty(service, 'client', {
+      value: { post: jest.fn().mockReturnValueOnce(result) },
+    });
 
     expect(service.createOrder('<pedido>')).resolves.toEqual(result);
   });
