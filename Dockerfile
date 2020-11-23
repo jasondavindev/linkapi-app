@@ -19,4 +19,4 @@ EXPOSE ${PORT}
 
 ENV NODE_ENV production
 
-CMD [ "yarn", "start:prod" ]
+CMD [ "node", "src/main.js" ]
