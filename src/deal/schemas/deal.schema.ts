@@ -9,6 +9,7 @@ export class Deal extends Document {
   createdAt?: Date;
   pipeDriveId: number;
   personName: string;
+  sentToPipedrive: boolean;
 }
 
 export const DealSchema = new Schema<Deal>(
@@ -19,6 +20,7 @@ export const DealSchema = new Schema<Deal>(
     wonTime: Date,
     pipeDriveId: Number,
     personName: String,
+    sentToPipedrive: { type: Boolean, default: false },
     products: {
       type: [ProductSchema],
       default: [],

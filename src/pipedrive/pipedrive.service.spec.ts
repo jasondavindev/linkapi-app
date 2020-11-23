@@ -8,6 +8,7 @@ import { PipedriveClientService } from './client/pipedrive.client.service';
 import { PipedriveService } from './pipedrive.service';
 import { Deal } from '../deal/schemas/deal.schema';
 import { DealModule } from '../deal/deal.module';
+import { productResponse } from '../__mocks__/products';
 
 describe('PipedriveService', () => {
   let pipedriveService: PipedriveService;
@@ -42,10 +43,13 @@ describe('PipedriveService', () => {
     jest
       .spyOn(pipedriveClientService, 'getWonDealsData')
       .mockResolvedValueOnce(dealResponse);
+    jest
+      .spyOn(pipedriveClientService, 'getProductsData')
+      .mockResolvedValueOnce(productResponse);
     jest.spyOn(mockDealModel, 'findOne').mockReturnValueOnce(null);
     jest.spyOn(mockDealModel, 'insertMany').mockReturnValueOnce([wonDeal]);
 
-    const createdDeals = await pipedriveService.findDealsAndCreate();
+    const createdDeals = await pipedriveService.dealsCreatorJob();
 
     expect(createdDeals.length).toBe(1);
   });
@@ -54,10 +58,13 @@ describe('PipedriveService', () => {
     jest
       .spyOn(pipedriveClientService, 'getWonDealsData')
       .mockResolvedValueOnce(dealResponse);
+    jest
+      .spyOn(pipedriveClientService, 'getProductsData')
+      .mockResolvedValueOnce(productResponse);
     jest.spyOn(mockDealModel, 'findOne').mockReturnValueOnce(wonDeal);
     jest.spyOn(mockDealModel, 'insertMany').mockReturnValueOnce([]);
 
-    const createdDeals = await pipedriveService.findDealsAndCreate();
+    const createdDeals = await pipedriveService.dealsCreatorJob();
 
     expect(createdDeals.length).toBe(0);
   });

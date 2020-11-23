@@ -1,12 +1,15 @@
-import * as js2xmlparser from 'js2xmlparser';
 import { Injectable } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import { PinoLogger } from 'nestjs-pino';
-import { DealService } from 'src/deal/deal.service';
-import { DealDto } from 'src/deal/dto/deal.dto';
-import { ProductDto } from 'src/deal/dto/product.dto';
+import { DealService } from '../deal/deal.service';
 import { BlingClientService } from './client/bling.client.service';
-import { OrderDto, OrderItemDto } from './dto/order.dto';
+
+import {
+  convertDealsToOrders,
+  convertOrdersToXML,
+} from './converter/bling.converter';
+
+const { BLING_JOB_DELAY } = process.env;
 
 @Injectable()
 export class BlingService {
@@ -16,15 +19,32 @@ export class BlingService {
     private readonly logger: PinoLogger,
   ) {}
 
-  @Interval(2000)
-  async sendOrdersToBling() {
-    const deals = await this.dealService.getNotSentDeals();
-    const orders = deals.map((deal) => this.convertToOrderDto(deal));
-    const ordersToXML = this.parseOrdersToXML(orders);
+  @Interval(parseInt(BLING_JOB_DELAY, 10) || 10000)
+  async ordersCreatorJob() {
+    this.logger.info('BlingService - finding not sent deals');
 
+    const notSentDeals = await this.dealService.getNotSentDeals();
+
+    this.logger.info(
+      `BlingService - found ${notSentDeals.length} deals not sent`,
+    );
+
+    const orders = convertDealsToOrders(notSentDeals);
+    const ordersXML = convertOrdersToXML(orders);
+    await this.sendOrdersToBlingApi(ordersXML);
+    await this.dealService.updateDealsSentStatus(notSentDeals);
+  }
+
+  async sendOrdersToBlingApi(orders: string[]) {
     this.logger.info('BlingService - sending orders to BlingAPI');
 
-    await Promise.all(this.createOrders(ordersToXML));
+    const createdOrders = this.createOrders(orders);
+
+    try {
+      await Promise.all(createdOrders);
+    } catch (error) {
+      this.logger.error('BlingService - error creating order error=', error);
+    }
   }
 
   async createOrder(order: string) {
@@ -33,32 +53,5 @@ export class BlingService {
 
   createOrders(ordersXML: string[]) {
     return ordersXML.map(async (order) => this.createOrder(order));
-  }
-
-  parseOrdersToXML(orders: OrderDto[]): string[] {
-    return orders.map((order) => js2xmlparser.parse('pedido', order));
-  }
-
-  convertToOrderDto(dealDto: DealDto): OrderDto {
-    return {
-      cliente: { nome: dealDto.personName },
-      volumes: [
-        { volume: { service: 'SEDEX - CONTRATO', codigoRastreamento: '' } },
-      ],
-      itens: this.convertItems(dealDto.products),
-      parcelas: [],
-    };
-  }
-
-  convertItems(products: ProductDto[]) {
-    return products.map<OrderItemDto>((product) => ({
-      item: {
-        codigo: String(product.id),
-        descricao: product.name,
-        qtde: product.quantity,
-        un: 'Pç',
-        vlr_unit: product.price,
-      },
-    }));
   }
 }

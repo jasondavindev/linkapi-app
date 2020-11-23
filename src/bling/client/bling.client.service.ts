@@ -1,6 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
 import { Injectable } from '@nestjs/common';
-import { OrderDto } from '../dto/order.dto';
 
 const { BLING_API_URL, BLING_USER_API_KEY } = process.env;
 

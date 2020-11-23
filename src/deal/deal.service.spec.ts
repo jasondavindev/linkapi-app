@@ -1,7 +1,7 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LoggerModule } from 'nestjs-pino';
-import { dealResponse, wonDeal } from '../__mocks__/deals';
+import { wonDeal } from '../__mocks__/deals';
 import loggerConfig from '../common/logger.config';
 import { DealService } from './deal.service';
 import { Deal } from './schemas/deal.schema';
@@ -28,10 +28,6 @@ describe('DealService', () => {
     }).compile();
 
     service = module.get<DealService>(DealService);
-  });
-
-  it('should convert raw data to dto', () => {
-    expect(service.convertDealsDto(dealResponse)[0]).toEqual(wonDeal);
   });
 
   it('should return if the deal record exists', () => {
